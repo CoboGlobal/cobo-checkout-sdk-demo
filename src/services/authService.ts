@@ -1,8 +1,8 @@
 import type { AuthTokens } from '@/types'
 
 /**
- * 模拟响应
- * 在实际环境中，应该调用真实的API 获取token(PSP方后端鉴权接口)
+ * Mock response
+ * In a real environment, you should call the actual API to get token (PSP backend authentication interface)
  */
 async function getMockTokenResponse(): Promise<{ data: AuthTokens }> {
   return Promise.resolve({
@@ -16,7 +16,7 @@ async function getMockTokenResponse(): Promise<{ data: AuthTokens }> {
 }
 
 /**
- * 从API获取新的access token
+ * Fetch new access token from API
  */
 async function fetchNewToken(): Promise<AuthTokens> {
   try {

@@ -1,8 +1,8 @@
-// 声明js-cookie模块
+// Declare js-cookie module
 declare module 'js-cookie'
 declare module 'fetch'
 
-// 声明全局window类型扩展
+// Declare global window type extension
 interface Window {
-  // 添加任何需要的全局属性
+  // Add any needed global properties
 }

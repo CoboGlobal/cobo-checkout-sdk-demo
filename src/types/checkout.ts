@@ -1,47 +1,47 @@
 import type { ITransaction } from './refund'
 
 export enum OrderStatus {
-  Pending = 'Pending', // 待支付
-  Processing = 'Processing', // 支付中
-  Completed = 'Completed', // 支付完成
-  Expired = 'Expired', // 订单过期
-  Underpaid = 'Underpaid', // 未支付足额
+  Pending = 'Pending', // Awaiting payment
+  Processing = 'Processing', // Processing payment
+  Completed = 'Completed', // Payment completed
+  Expired = 'Expired', // Order expired
+  Underpaid = 'Underpaid', // Insufficient payment
 }
 
-// 订单信息接口
+// Order information interface
 export interface IOrder {
-  orderId: string // Cobo订单ID
-  merchantId: string // 商户ID
-  tokenId: string // 代币ID
-  chainId: string // 链ID
-  orderAmount: string // 订单金额
-  receiveAddress: string // 接收地址
-  currency: string // 法币币种
-  payableAmount: string // 应付金额
-  feeAmount: string // 手续费
-  exchangeRate: string // 法币汇率
-  expiredAt: number // 订单过期时间
-  merchantOrderCode: string // 商户订单号
-  pspOrderCode: string // 服务商订单号
-  status: OrderStatus // 订单状态
-  receivedTokenAmount: string // 接收到的代币数量
+  orderId: string // Cobo order ID
+  merchantId: string // Merchant ID
+  tokenId: string // Token ID
+  chainId: string // Chain ID
+  orderAmount: string // Order amount
+  receiveAddress: string // Receive address
+  currency: string // Fiat currency
+  payableAmount: string // Payable amount
+  feeAmount: string // Fee amount
+  exchangeRate: string // Fiat exchange rate
+  expiredAt: number // Order expiration time
+  merchantOrderCode: string // Merchant order code
+  pspOrderCode: string // Service provider order code
+  status: OrderStatus // Order status
+  receivedTokenAmount: string // Received token amount
   transactions: ITransaction[]
 }
 
 export interface ICheckoutInfo {
-  locale: 'zh' | 'en' // 语言
-  fiatCurrency: string // 法币币种
-  fiatAmount: string // 法币金额
-  feeAmount: string // 手续费
-  merchantOrderCode: string // 商户订单号
-  pspOrderCode: string // 服务商订单号
-  expiredIn?: number // 订单过期时间（可选）
-  merchantId: string // 商户ID
-  merchantName: string // 商户名称
-  merchantLogo: string // 商户Logo
-  merchantUrl: string // 商户URL
-  supportToken?: string[]; // 支持的币种(可选)
-  supportChain?: string[]; // 支持的链(可选)
+  locale: 'zh' | 'en' // Language
+  fiatCurrency: string // Fiat currency
+  fiatAmount: string // Fiat amount
+  feeAmount: string // Fee amount
+  merchantOrderCode: string // Merchant order code
+  pspOrderCode: string // Service provider order code
+  expiredIn?: number // Order expiration time (optional)
+  merchantId: string // Merchant ID
+  merchantName: string // Merchant name
+  merchantLogo: string // Merchant logo
+  merchantUrl: string // Merchant URL
+  supportToken?: string[]; // Supported tokens (optional)
+  supportChain?: string[]; // Supported chains (optional)
 }
 
 export interface IAccessInfo {
@@ -51,14 +51,14 @@ export interface IAccessInfo {
   expiresIn: number
 }
 
-// 业务方前端发送给iframe的消息类型
+// Message types sent from business frontend to iframe
 export enum CheckoutOutboundMessageType {
   INIT = 'INIT',
   GET_TOKEN = 'GET_TOKEN',
   CUSTOM_ACTION = 'CUSTOM_ACTION',
 }
 
-// iframe发送给业务方前端的消息类型
+// Message types sent from iframe to business frontend
 export enum CheckoutInboundMessageType {
   LOADED = 'LOADED',
   ORDER_CREATED = 'ORDER_CREATED',
@@ -68,7 +68,7 @@ export enum CheckoutInboundMessageType {
   GOTO_URL = 'GOTO_URL',
 }
 
-// 业务方前端发送给iframe的消息
+// Messages sent from business frontend to iframe
 export interface CheckoutIframeOutboundMessage {
   type: CheckoutOutboundMessageType
   payload: {
@@ -77,7 +77,7 @@ export interface CheckoutIframeOutboundMessage {
   }
 }
 
-// iframe发送给业务方前端的消息
+// Messages sent from iframe to business frontend
 export interface CheckoutIframeInboundMessage {
   type: CheckoutInboundMessageType
   payload: {

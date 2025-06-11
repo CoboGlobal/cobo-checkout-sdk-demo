@@ -21,7 +21,7 @@ a,
   }
 }
 
-/* 移除可能导致布局问题的样式 */
+/* Remove styles that may cause layout issues */
 @media (min-width: 1024px) {
   #app {
     padding: 0 2rem;

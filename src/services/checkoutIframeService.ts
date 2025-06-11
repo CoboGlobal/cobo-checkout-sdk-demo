@@ -17,12 +17,12 @@ export class CheckoutIframeManager {
   private messageCount = 0
 
   constructor() {
-    // 创建消息处理函数
+    // Create message handling function
     this.messageHandler = this.handleIframeMessage.bind(this)
   }
 
   /**
-   * 初始化Iframe
+   * Initialize Iframe
    */
   public initialize(iframeElement: HTMLIFrameElement, config: Partial<ICheckoutInfo>): void {
     this.iframe = iframeElement
@@ -35,7 +35,7 @@ export class CheckoutIframeManager {
   }
 
   /**
-   * 清理函数 - 在组件销毁时调用
+   * Cleanup function - called when component is destroyed
    */
   public cleanup(): void {
     if (this.messageHandler) {
@@ -50,7 +50,7 @@ export class CheckoutIframeManager {
   }
 
   /**
-   * 主动推送access token到iframe
+   * Actively push access token to iframe
    */
   public async sendAccessToken(): Promise<void> {
     if (!this.iframe || !this.iframeLoaded) {
@@ -58,10 +58,10 @@ export class CheckoutIframeManager {
     }
 
     try {
-      // 获取有效的访问令牌
+      // Get valid access token
       const accessToken = await getAccessToken()
 
-      // 发送INIT消息
+      // Send INIT message
       const message: CheckoutIframeOutboundMessage = {
         type: CheckoutOutboundMessageType.GET_TOKEN,
         payload: {
@@ -85,14 +85,14 @@ export class CheckoutIframeManager {
   }
 
   /**
-   * 主动推送结账信息到iframe
+   * Actively push checkout info to iframe
    */
   public async sendCheckoutInfo(): Promise<void> {
     if (!this.iframe || !this.iframeLoaded) {
       return
     }
     try {
-      // 发送INIT消息
+      // Send INIT message
       const message: CheckoutIframeOutboundMessage = {
         type: CheckoutOutboundMessageType.INIT,
         payload: {
@@ -109,15 +109,15 @@ export class CheckoutIframeManager {
     }
   }
   /**
-   * 处理来自iframe的消息
+   * Handle messages from iframe
    */
   private handleIframeMessage(event: MessageEvent): void {
-    // 确保消息来自正确的源（在测试环境中可能需要放宽这个限制）
+    // Ensure message comes from correct source (may need to relax this restriction in test environment)
     // if (event.origin !== IFRAME_ORIGIN) {
     //   return
     // }
 
-    // 过滤掉React DevTools消息
+    // Filter out React DevTools messages
     if (
       event.data &&
       typeof event.data === 'object' &&
@@ -126,9 +126,9 @@ export class CheckoutIframeManager {
       return
     }
 
-    // 检查消息是否有效
+    // Check if message is valid
     if (!event.data || typeof event.data !== 'object' || !event.data.type) {
-      // 非标准消息，忽略
+      // Non-standard message, ignore
       return
     }
 
@@ -155,7 +155,7 @@ export class CheckoutIframeManager {
         break
 
       case CheckoutInboundMessageType.TOKEN_EXPIRED:
-        // 令牌过期，获取新令牌
+        // Token expired, get new token
         console.log('Received TOKEN_EXPIRED message from iframe')
         this.sendAccessToken()
         break
@@ -175,7 +175,7 @@ export class CheckoutIframeManager {
   }
 }
 
-// 导出单例实例
+// Export singleton instance
 export const checkoutIframeManager = new CheckoutIframeManager()
 
 export default checkoutIframeManager

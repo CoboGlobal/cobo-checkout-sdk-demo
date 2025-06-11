@@ -11,71 +11,71 @@
       ></iframe>
     </div>
     <div class="settings">
-      <h2>交易设置</h2>
+      <h2>Transaction Settings</h2>
       <div class="form-row">
-        <label for="amount">金额 (USD):</label>
+        <label for="amount">Amount (USD):</label>
         <input id="amount" v-model="amount" type="number" min="1" step="0.01" />
       </div>
       <div class="form-row">
-        <label for="locale">语言:</label>
+        <label for="locale">Language:</label>
         <select id="locale" v-model="locale">
           <option value="zh">中文</option>
-          <option value="en">英文</option>
+          <option value="en">English</option>
         </select>
       </div>
       <div class="form-row">
-        <label for="merchantOrderCode">订单号:</label>
+        <label for="merchantOrderCode">Order Number:</label>
         <input id="merchantOrderCode" v-model="merchantOrderCode" type="text" />
       </div>
       <div class="form-row">
-        <label for="merchantOrderCode">订单号:</label>
+        <label for="merchantOrderCode">Order Number:</label>
         <input id="pspOrderCode" v-model="pspOrderCode" type="text" />
       </div>
       <div class="form-row">
-        <button @click="refreshOrderCode">生成新商户订单号</button>
-        <button @click="refreshPSPOrderCode">获取新的PSP订单号</button>
-        <button @click="initializeCheckout">开始结账</button>
+        <button @click="refreshOrderCode">Generate New Merchant Order Code</button>
+        <button @click="refreshPSPOrderCode">Get New PSP Order Code</button>
+        <button @click="initializeCheckout">Start Checkout</button>
       </div>
     </div>
 
     <div v-if="currentOrder" class="order-info">
-      <h2>当前订单信息</h2>
+      <h2>Current Order Information</h2>
       <div class="info-item">
-        <span class="label">订单ID:</span>
+        <span class="label">Order ID:</span>
         <span class="value">{{ currentOrder.orderId }}</span>
       </div>
       <div class="info-item">
-        <span class="label">状态:</span>
+        <span class="label">Status:</span>
         <span class="value" :class="getStatusClass(currentOrder.status)">
           {{ getStatusText(currentOrder.status) }}
         </span>
       </div>
       <div class="info-item">
-        <span class="label">法币金额:</span>
+        <span class="label">Fiat Amount:</span>
         <span class="value">{{ currentOrder.orderAmount }} {{ currentOrder.currency }}</span>
       </div>
       <div class="info-item">
-        <span class="label">加密货币:</span>
+        <span class="label">Crypto Currency:</span>
         <span class="value">{{ currentOrder.payableAmount }} {{ currentOrder.tokenId }}</span>
       </div>
       <div class="info-item">
-        <span class="label">链:</span>
+        <span class="label">Chain:</span>
         <span class="value">{{ currentOrder.chainId }}</span>
       </div>
       <div class="info-item">
-        <span class="label">接收地址:</span>
+        <span class="label">Receive Address:</span>
         <span class="value address">{{ currentOrder.receiveAddress }}</span>
       </div>
       <div class="info-item">
-        <span class="label">过期时间:</span>
+        <span class="label">Expiration Time:</span>
         <span class="value">{{ formatExpireTime(currentOrder.expiredAt) }}</span>
       </div>
     </div>
 
     <div class="event-log">
-      <h2>事件日志</h2>
+      <h2>Event Log</h2>
       <div class="log-controls">
-        <button @click="clearEventLog">清空日志</button>
+        <button @click="clearEventLog">Clear Log</button>
       </div>
       <div class="log-entries">
         <div v-for="(event, index) in eventLog" :key="index" class="log-entry">
@@ -94,12 +94,12 @@ import type { IOrder } from '@/types'
 import { OrderStatus } from '../types'
 import { checkoutIframeManager } from '../services/checkoutIframeService'
 
-// 测试环境
+// Test environment
 const iframeUrl = 'https://payout-checkout.dev.cobo.com';
-// 生产环境
+// Production environment
 // const iframeUrl = 'https://payout-checkout.cobo.com';
 
-// 基本配置
+// Basic configuration
 const amount = ref('0.1')
 const merchantId = 'M1002'
 const merchantName = 'Demo Store'
@@ -107,32 +107,33 @@ const merchantLogo = 'https://placeholder.com/logo.png'
 const merchantUrl = 'https://example.com'
 const merchantOrderCode = ref(`order-${Date.now()}`)
 const pspOrderCode = ref(`psp-${Date.now()}`)
-const locale = ref<'zh' | 'en'>('zh')
-// UI状态
+const locale = ref<'zh' | 'en'>('en')
+// UI state
 const showIframe = ref(false)
 const checkoutIframe = ref<HTMLIFrameElement | null>(null)
 const currentOrder = ref<IOrder | null>(null)
 const eventLog = ref<Array<{ type: string; timestamp: Date; data: any }>>([])
 
-// 刷新订单号
+// Refresh order code
 const refreshOrderCode = () => {
   merchantOrderCode.value = `order-${Date.now()}`
-  addEventLog('INFO', '已生成新订单号')
+  addEventLog('INFO', 'New order code generated')
 }
 
-// 刷新PSP订单号
+// Refresh PSP order code
 const refreshPSPOrderCode = () => {
   pspOrderCode.value = `psp-${Date.now()}`
-  addEventLog('INFO', '已生成新PSP订单号')
+  addEventLog('INFO', 'New PSP order code generated')
 }
 
-// 初始化结账
+// Initialize checkout
 const initializeCheckout = async () => {
   showIframe.value = true
   currentOrder.value = null
-  // 等待DOM更新后初始化iframe
+  // Wait for DOM update before initializing iframe
   await new Promise((resolve) => setTimeout(resolve, 100))
   if (checkoutIframe.value) {
+    // For detailed parameter explanation, please refer to API documentation: https://www.cobo.com/developers/v2/api-references/payment/create-pay-in-order
     checkoutIframeManager.initialize(checkoutIframe.value, {
       fiatCurrency: 'USD',
       fiatAmount: amount.value,
@@ -140,19 +141,19 @@ const initializeCheckout = async () => {
       merchantName,
       merchantLogo,
       merchantUrl,
-      feeAmount: '0.01', // 手续费,PSP方决定，真实业务场景需要PSP调用接口获取
+      feeAmount: '0.01', // Developer fee, determined by PSP
       merchantOrderCode: merchantOrderCode.value,
-      pspOrderCode: pspOrderCode.value, // 服务商订单号,PSP方决定
-      expiredIn: 30 * 60, // 订单过期时间，PSP方决定，最小30分钟，最大3小时（单位：秒）
+      pspOrderCode: pspOrderCode.value, // Service provider order code, determined by PSP
+      expiredIn: 30 * 60, // Order expiration time, determined by PSP, minimum 30 minutes, maximum 3 hours (unit: seconds)
       locale: locale.value,
       supportToken: ['USDT', 'USDC'],
       supportChain: ['ARBITRUM_ETH', 'BASE_ETH', 'BSC_BNB', 'ETH', 'MATIC', 'SOL', 'TRON'],
     })
-    addEventLog('INFO', '结账已初始化')
+    addEventLog('INFO', 'Checkout initialized')
   }
 }
 
-// 添加事件日志
+// Add event log
 const addEventLog = (type: string, data: any) => {
   eventLog.value.unshift({
     type,
@@ -161,12 +162,12 @@ const addEventLog = (type: string, data: any) => {
   })
 }
 
-// 清空事件日志
+// Clear event log
 const clearEventLog = () => {
   eventLog.value = []
 }
 
-// 格式化事件数据
+// Format event data
 const formatEventData = (data: any) => {
   if (typeof data === 'object') {
     return JSON.stringify(data, null, 2)
@@ -174,44 +175,44 @@ const formatEventData = (data: any) => {
   return data
 }
 
-// 格式化时间
+// Format time
 const formatTime = (date: Date) => {
   return date.toLocaleTimeString()
 }
 
-// 格式化过期时间
+// Format expiration time
 const formatExpireTime = (timestamp: number) => {
   if (!timestamp) return 'N/A'
   const date = new Date(timestamp)
   return date.toLocaleString()
 }
 
-// 获取状态文本
+// Get status text
 const getStatusText = (status: OrderStatus) => {
   const statusMap: Record<OrderStatus, string> = {
-    [OrderStatus.Pending]: '待支付',
-    [OrderStatus.Processing]: '支付中',
-    [OrderStatus.Completed]: '已完成',
-    [OrderStatus.Expired]: '已过期',
-    [OrderStatus.Underpaid]: '支付不足',
+    [OrderStatus.Pending]: 'Pending Payment',
+    [OrderStatus.Processing]: 'Processing',
+    [OrderStatus.Completed]: 'Completed',
+    [OrderStatus.Expired]: 'Expired',
+    [OrderStatus.Underpaid]: 'Underpaid',
   }
   return statusMap[status] || status
 }
 
-// 获取状态CSS类
+// Get status CSS class
 const getStatusClass = (status: OrderStatus) => {
   return status.toLowerCase()
 }
 
-// 组件挂载
+// Component mounted
 onMounted(() => {
-  addEventLog('INFO', '组件已加载')
+  addEventLog('INFO', 'Component loaded')
 })
 
-// 组件销毁前清理
+// Cleanup before component unmount
 onBeforeUnmount(() => {
   checkoutIframeManager.cleanup()
-  addEventLog('INFO', '组件已卸载')
+  addEventLog('INFO', 'Component unmounted')
 })
 </script>
 

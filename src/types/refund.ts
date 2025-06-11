@@ -55,31 +55,31 @@ export interface IRefundInfo {
   txHash?: string
   fiatCurrency: string
   fiatAmount: string
-  expiryTime?: number // 验证码过期时间戳（毫秒）
+  expiryTime?: number // Verification code expiration timestamp (milliseconds)
 }
 
-// 退款iframe配置接口
+// Refund iframe configuration interface
 export interface IRefundIframeConfig {
-  // iframe参数
+  // iframe parameters
   url: string // iframe URL
-  width: string // iframe宽度
-  height: string // iframe高度
-  style?: object // 自定义样式
+  width: string // iframe width
+  height: string // iframe height
+  style?: object // Custom styles
 
-  // 业务参数
-  merchantId: string // 商户ID
-  merchantName: string // 商户名称
-  merchantLogo: string // 商户Logo
-  merchantOrderCode?: string // 商户订单号
+  // Business parameters
+  merchantId: string // Merchant ID
+  merchantName: string // Merchant name
+  merchantLogo: string // Merchant logo
+  merchantOrderCode?: string // Merchant order code
 
-  // 退款信息
+  // Refund information
   refundInfo?: IRefundInfo
 
-  // 回调函数
-  onCheckVerificationCode?: (code: string) => Promise<boolean> // 验证码校验回调
-  onResendVerificationCode?: () => Promise<void> // 重发验证码回调
-  onRefund?: (refundInfo: IRefundInfo) => Promise<void> // 退款回调
-  onRefundStatusChange?: (refundInfo: IRefundInfo) => Promise<void> // 退款状态变更回调
+  // Callback functions
+  onCheckVerificationCode?: (code: string) => Promise<boolean> // Verification code validation callback
+  onResendVerificationCode?: () => Promise<void> // Resend verification code callback
+  onRefund?: (refundInfo: IRefundInfo) => Promise<void> // Refund callback
+  onRefundStatusChange?: (refundInfo: IRefundInfo) => Promise<void> // Refund status change callback
 }
 export enum RefundInboundMessageType {
   INIT = 'INIT',
@@ -104,15 +104,15 @@ export enum RefundOutboundMessageType {
 export interface RefundIframeInboundMessage {
   type: RefundInboundMessageType
   payload: {
-    // INIT消息的payload
+    // INIT message payload
     config?: IRefundIframeConfig
-    // GET_TOKEN消息的payload
+    // GET_TOKEN message payload
     accessToken?: string
-    // REFUND_INIT消息的payload
+    // REFUND_INIT message payload
     refundConfig?: IRefundIframeConfig
-    // VERIFICATION_CODE_CHECK_RESULT消息的payload
+    // VERIFICATION_CODE_CHECK_RESULT message payload
     isCodeValid?: boolean
-    // 其他自定义参数...
+    // Other custom parameters...
     [key: string]: any
   }
 }
@@ -120,19 +120,19 @@ export interface RefundIframeInboundMessage {
 export interface RefundIframeOutboundMessage {
   type: RefundOutboundMessageType
   payload: {
-    // TOKEN_EXPIRED消息
+    // TOKEN_EXPIRED message
     errorCode?: 'TOKEN_EXPIRED'
     errorMessage?: string
-    // ERROR消息的payload
+    // ERROR message payload
     error?: {
       code: string
       message: string
     }
-    // CHECK_VERIFICATION_CODE消息的payload
+    // CHECK_VERIFICATION_CODE message payload
     verificationCode?: string
-    // REFUND_SUBMITTED消息的payload
+    // REFUND_SUBMITTED message payload
     refundInfo?: IRefundInfo
-    // 其他特定消息的payload...
+    // Other specific message payloads...
     [key: string]: any
   }
 }

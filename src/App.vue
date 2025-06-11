@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
 import CheckoutDemo from './views/CheckoutDemo.vue'
 import { setupParentConsoleListener } from '@/services/iframeLogger';
 import { onMounted } from 'vue';
@@ -11,14 +10,6 @@ onMounted(() => {
 
 <template>
   <div class="app-container">
-    <!-- <header>
-      <div class="wrapper">
-        <nav>
-          <RouterLink to="/">首页</RouterLink>
-        </nav>
-      </div>
-    </header> -->
-
     <main>
       <CheckoutDemo />
     </main>
@@ -26,7 +17,7 @@ onMounted(() => {
 </template>
 
 <style>
-/* 重置一些全局样式以避免布局问题 */
+/* Reset some global styles to avoid layout issues */
 body {
   margin: 0;
   padding: 0;
