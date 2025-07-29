@@ -40,6 +40,7 @@ export interface ICheckoutInfo {
   merchantName: string // Merchant name
   merchantLogo: string // Merchant logo
   merchantUrl: string // Merchant URL
+  developerName?: string // Powered by xxx (optional)
   supportToken?: string[]; // Supported tokens (optional)
   supportChain?: string[]; // Supported chains (optional)
 }

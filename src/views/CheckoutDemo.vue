@@ -145,6 +145,7 @@ const initializeCheckout = async () => {
       merchantOrderCode: merchantOrderCode.value,
       pspOrderCode: pspOrderCode.value, // Service provider order code, determined by PSP
       expiredIn: 30 * 60, // Order expiration time, determined by PSP, minimum 30 minutes, maximum 3 hours (unit: seconds)
+      developerName: 'xxx', // Powered by xxx, only supports letters and @, length cannot exceed 20 characters, will be hidden if not passed or invalid
       locale: locale.value,
       supportToken: ['USDT', 'USDC'],
       supportChain: ['ARBITRUM_ETH', 'BASE_ETH', 'BSC_BNB', 'ETH', 'MATIC', 'SOL', 'TRON'],
