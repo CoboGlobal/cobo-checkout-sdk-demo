@@ -2,6 +2,8 @@ const axios = require('axios');
 const crypto = require('crypto');
 const nacl = require('tweetnacl');
 const qs = require('querystring');
+const fs = require('fs');
+const path = require('path');
 
 class CoboAPI {
   constructor(apiKey, apiSecret) {
@@ -73,4 +75,14 @@ class CoboAPI {
   const cobo = new CoboAPI(apiKey, apiSecret);
   const result = await cobo.paymentTokenExchange();
   console.log(result);
+
+  if (result) {
+    const filePath = path.join(__dirname, 'src/services/authService.ts');
+    let content = fs.readFileSync(filePath, 'utf8');
+  
+    content = content.replace(/access_token:\s*'[^']*'/, `access_token: '${result.access_token}'`);
+    content = content.replace(/refresh_token:\s*'[^']*'/, `refresh_token: '${result.refresh_token}'`);
+  
+    fs.writeFileSync(filePath, content, 'utf8');
+  }
 })();

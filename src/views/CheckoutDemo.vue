@@ -1,5 +1,89 @@
 <template>
-  <div class="checkout-demo">
+  <div>
+    <div class="checkout-demo" v-if="!showIframe">
+      <div class="settings">
+        <h2>Transaction Settings</h2>
+        <div class="form-row">
+          <label for="amount">Amount:</label>
+          <input id="amount" v-model="amount" type="number" min="1" step="0.01" />
+        </div>
+        <div class="form-row">
+          <label for="paymentType">Payment Type:</label>
+          <select id="paymentType" v-model="paymentType">
+            <option value="fiat">Fiat</option>
+            <option value="crypto">Crypto</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="locale">Language:</label>
+          <select id="locale" v-model="locale">
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="merchantOrderCode">Order Number:</label>
+          <input id="merchantOrderCode" v-model="merchantOrderCode" type="text" />
+        </div>
+        <div class="form-row">
+          <label for="merchantOrderCode">Order Number:</label>
+          <input id="pspOrderCode" v-model="pspOrderCode" type="text" />
+        </div>
+        <div class="form-row">
+          <button @click="refreshOrderCode">Generate New Merchant Order Code</button>
+          <button @click="refreshPSPOrderCode">Get New PSP Order Code</button>
+          <button @click="initializeCheckout">Start Checkout</button>
+        </div>
+      </div>
+
+      <div v-if="currentOrder" class="order-info">
+        <h2>Current Order Information</h2>
+        <div class="info-item">
+          <span class="label">Order ID:</span>
+          <span class="value">{{ currentOrder.orderId }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Status:</span>
+          <span class="value" :class="getStatusClass(currentOrder.status)">
+            {{ getStatusText(currentOrder.status) }}
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="label">Fiat Amount:</span>
+          <span class="value">{{ currentOrder.orderAmount }} {{ currentOrder.currency }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Crypto Currency:</span>
+          <span class="value">{{ currentOrder.payableAmount }} {{ currentOrder.tokenId }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Chain:</span>
+          <span class="value">{{ currentOrder.chainId }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Receive Address:</span>
+          <span class="value address">{{ currentOrder.receiveAddress }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Expiration Time:</span>
+          <span class="value">{{ formatExpireTime(currentOrder.expiredAt) }}</span>
+        </div>
+      </div>
+
+      <div class="event-log">
+        <h2>Event Log</h2>
+        <div class="log-controls">
+          <button @click="clearEventLog">Clear Log</button>
+        </div>
+        <div class="log-entries">
+          <div v-for="(event, index) in eventLog" :key="index" class="log-entry">
+            <span class="time">{{ formatTime(event.timestamp) }}</span>
+            <span class="type" :class="event.type.toLowerCase()">{{ event.type }}</span>
+            <pre class="data">{{ formatEventData(event.data) }}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="iframe-container" v-if="showIframe">
       <iframe
         ref="checkoutIframe"
@@ -10,86 +94,11 @@
         allow="clipboard-write"
       ></iframe>
     </div>
-    <div class="settings">
-      <h2>Transaction Settings</h2>
-      <div class="form-row">
-        <label for="amount">Amount (USD):</label>
-        <input id="amount" v-model="amount" type="number" min="1" step="0.01" />
-      </div>
-      <div class="form-row">
-        <label for="locale">Language:</label>
-        <select id="locale" v-model="locale">
-          <option value="zh">中文</option>
-          <option value="en">English</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label for="merchantOrderCode">Order Number:</label>
-        <input id="merchantOrderCode" v-model="merchantOrderCode" type="text" />
-      </div>
-      <div class="form-row">
-        <label for="merchantOrderCode">Order Number:</label>
-        <input id="pspOrderCode" v-model="pspOrderCode" type="text" />
-      </div>
-      <div class="form-row">
-        <button @click="refreshOrderCode">Generate New Merchant Order Code</button>
-        <button @click="refreshPSPOrderCode">Get New PSP Order Code</button>
-        <button @click="initializeCheckout">Start Checkout</button>
-      </div>
-    </div>
-
-    <div v-if="currentOrder" class="order-info">
-      <h2>Current Order Information</h2>
-      <div class="info-item">
-        <span class="label">Order ID:</span>
-        <span class="value">{{ currentOrder.orderId }}</span>
-      </div>
-      <div class="info-item">
-        <span class="label">Status:</span>
-        <span class="value" :class="getStatusClass(currentOrder.status)">
-          {{ getStatusText(currentOrder.status) }}
-        </span>
-      </div>
-      <div class="info-item">
-        <span class="label">Fiat Amount:</span>
-        <span class="value">{{ currentOrder.orderAmount }} {{ currentOrder.currency }}</span>
-      </div>
-      <div class="info-item">
-        <span class="label">Crypto Currency:</span>
-        <span class="value">{{ currentOrder.payableAmount }} {{ currentOrder.tokenId }}</span>
-      </div>
-      <div class="info-item">
-        <span class="label">Chain:</span>
-        <span class="value">{{ currentOrder.chainId }}</span>
-      </div>
-      <div class="info-item">
-        <span class="label">Receive Address:</span>
-        <span class="value address">{{ currentOrder.receiveAddress }}</span>
-      </div>
-      <div class="info-item">
-        <span class="label">Expiration Time:</span>
-        <span class="value">{{ formatExpireTime(currentOrder.expiredAt) }}</span>
-      </div>
-    </div>
-
-    <div class="event-log">
-      <h2>Event Log</h2>
-      <div class="log-controls">
-        <button @click="clearEventLog">Clear Log</button>
-      </div>
-      <div class="log-entries">
-        <div v-for="(event, index) in eventLog" :key="index" class="log-entry">
-          <span class="time">{{ formatTime(event.timestamp) }}</span>
-          <span class="type" :class="event.type.toLowerCase()">{{ event.type }}</span>
-          <pre class="data">{{ formatEventData(event.data) }}</pre>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import type { IOrder } from '@/types'
 import { OrderStatus } from '../types'
 import { checkoutIframeManager } from '../services/checkoutIframeService'
@@ -108,6 +117,7 @@ const merchantUrl = 'https://example.com'
 const merchantOrderCode = ref(`order-${Date.now()}`)
 const pspOrderCode = ref(`psp-${Date.now()}`)
 const locale = ref<'zh' | 'en'>('en')
+const paymentType = ref<'fiat' | 'crypto'>('fiat')
 // UI state
 const showIframe = ref(false)
 const checkoutIframe = ref<HTMLIFrameElement | null>(null)
@@ -131,12 +141,11 @@ const initializeCheckout = async () => {
   showIframe.value = true
   currentOrder.value = null
   // Wait for DOM update before initializing iframe
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await nextTick()
   if (checkoutIframe.value) {
     // For detailed parameter explanation, please refer to API documentation: https://www.cobo.com/developers/v2/api-references/payment/create-pay-in-order
     checkoutIframeManager.initialize(checkoutIframe.value, {
-      fiatCurrency: 'USD',
-      fiatAmount: amount.value,
+      // Required fields
       merchantId,
       merchantName,
       merchantLogo,
@@ -144,9 +153,15 @@ const initializeCheckout = async () => {
       feeAmount: '0.01', // Developer fee, determined by PSP
       merchantOrderCode: merchantOrderCode.value,
       pspOrderCode: pspOrderCode.value, // Service provider order code, determined by PSP
+      locale: locale.value,
+      // If amount is fiat, the following fields are required, feeAmount is also calculated in fiat
+      fiatCurrency: paymentType.value === 'fiat' ? 'USD' : undefined,
+      fiatAmount: paymentType.value === 'fiat' ? amount.value : undefined,
+      // If amount is crypto, the following fields are required, feeAmount is also calculated in crypto
+      cryptoAmount: paymentType.value === 'crypto' ? amount.value : undefined,
+      // Optional fields
       expiredIn: 30 * 60, // Order expiration time, determined by PSP, minimum 30 minutes, maximum 3 hours (unit: seconds)
       developerName: 'xxx', // Powered by xxx, only supports letters and @, length cannot exceed 20 characters, will be hidden if not passed or invalid
-      locale: locale.value,
       supportToken: ['USDT', 'USDC'],
       supportChain: ['ARBITRUM_ETH', 'BASE_ETH', 'BSC_BNB', 'ETH', 'MATIC', 'SOL', 'TRON'],
     })
@@ -221,6 +236,7 @@ onBeforeUnmount(() => {
 .checkout-demo {
   max-width: 1000px;
   margin: 0 auto;
+  padding: 1rem;
   font-family: Arial, sans-serif;
 }
 
@@ -269,9 +285,6 @@ onBeforeUnmount(() => {
 }
 
 .iframe-container {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100vw;
   height: 100vh;
   border: none;

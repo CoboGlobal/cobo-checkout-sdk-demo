@@ -30,9 +30,10 @@ export interface IOrder {
 
 export interface ICheckoutInfo {
   locale: 'zh' | 'en' // Language
-  fiatCurrency: string // Fiat currency
-  fiatAmount: string // Fiat amount
+  fiatCurrency?: string // Fiat currency
+  fiatAmount?: string // Fiat amount
   feeAmount: string // Fee amount
+  cryptoAmount?: string // Crypto amount
   merchantOrderCode: string // Merchant order code
   pspOrderCode: string // Service provider order code
   expiredIn?: number // Order expiration time (optional)
